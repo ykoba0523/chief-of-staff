@@ -5,12 +5,19 @@
     "node": ">=22.0.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "workerd"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "workerd"
+    ]
   },
   "scripts": {
     "dev:gateway": "pnpm --filter gateway dev",
     "dev:agent": "pnpm --filter agent dev",
     "deploy:gateway": "pnpm --filter gateway deploy",
     "build:agent": "pnpm --filter agent build"
+  },
+  "devDependencies": {
+    "dotenv": "^17.3.1",
+    "tsx": "^4.21.0"
   }
 }
