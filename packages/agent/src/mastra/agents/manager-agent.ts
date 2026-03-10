@@ -1,5 +1,8 @@
 import { Agent } from "@mastra/core/agent";
 import { google } from "@ai-sdk/google";
+import { getTasks } from "../tools/get-tasks";
+import { addTask } from "../tools/add-task";
+import { updateTask } from "../tools/update-task";
 
 export const managerAgent = new Agent({
   name: "manager-agent",
@@ -23,6 +26,5 @@ export const managerAgent = new Agent({
 - 締切が近いタスクは積極的にリマインドする
 - 完了報告があればすぐにステータスを更新し、ポジティブなフィードバックを返す
 `,
-  // Phase 3 で tools を追加
-  // tools: { getTasks, addTask, updateTask },
+  tools: { getTasks, addTask, updateTask },
 });
