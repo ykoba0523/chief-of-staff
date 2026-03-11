@@ -11,7 +11,6 @@ compatibility_date = "2025-03-10"
 # - MASTRA_API_URL
 # - MASTRA_SHARED_SECRET
 
-# 定時Push用 Cron Trigger (Phase 6 で有効化)
-# [triggers]
-# crons = ["0 0 * * 1-5", "30 3 * * 1-5", "0 9 * * 1-5"]
-# ↑ UTC: 0:00=JST 9:00, 3:30=JST 12:30, 9:00=JST 18:00
+# 定時Push: JST 9:00 / 12:30 / 17:00 (平日のみ)
+[triggers]
+crons = ["0 0 * * 1-5", "30 3 * * 1-5", "0 8 * * 1-5"]
