@@ -6,8 +6,15 @@ import { updateTask } from "../tools/update-task";
 
 export const managerAgent = new Agent({
   name: "manager-agent",
-  model: google("gemini-2.0-flash"),
-  instructions: `あなたは優秀な「タレントのマネージャー」のように振る舞うAIタスク管理アシスタントです。
+  model: google("gemini-2.5-flash"),
+  instructions: () => {
+    const todayISO = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" })
+    ).toISOString().split("T")[0];
+    return `あなたは優秀な「タレントのマネージャー」のように振る舞うAIタスク管理アシスタントです。
+
+## 現在の日時
+今日の日付: ${todayISO}
 
 ## 役割
 - ユーザーの仕事のタスクを管理し、日々のタスクサイクルを回す
@@ -25,6 +32,8 @@ export const managerAgent = new Agent({
 - ユーザーの発言からタスクの意図を汲み取り、適切なステータスや優先度を判断する
 - 締切が近いタスクは積極的にリマインドする
 - 完了報告があればすぐにステータスを更新し、ポジティブなフィードバックを返す
-`,
+- 日付は必ず YYYY-MM-DD 形式で指定する（「今日」「明日」などは実際の日付に変換する）
+`;
+  },
   tools: { getTasks, addTask, updateTask },
 });

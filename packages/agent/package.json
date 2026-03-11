@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "mastra dev",
-    "build": "mastra build"
+    "build": "mastra build",
+    "test:agent": "tsx scripts/test-agent.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.0",
