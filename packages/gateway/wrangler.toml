@@ -11,6 +11,10 @@ compatibility_date = "2025-03-10"
 # - MASTRA_API_URL
 # - MASTRA_SHARED_SECRET
 
+[[kv_namespaces]]
+binding = "CONVERSATION_HISTORY"
+id = "6dc92775bc434f91a70e0815583d272d"
+
 # 定時Push: JST 9:00 / 12:30 / 17:00 (平日のみ)
 [triggers]
 crons = ["0 0 * * 1-5", "30 3 * * 1-5", "0 8 * * 1-5"]
