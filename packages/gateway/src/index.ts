@@ -131,6 +131,7 @@ async function processAndReply(env: Env, event: any): Promise<void> {
 
     if (!agentResponse.ok) {
       console.error("Agent API error:", agentResponse.status, await agentResponse.text());
+      await sendSlackMessage(env.SLACK_BOT_TOKEN, event.channel, ":warning: エラーが発生しました。しばらくしてから再度お試しください。");
       return;
     }
 
@@ -140,6 +141,7 @@ async function processAndReply(env: Env, event: any): Promise<void> {
     await sendSlackMessage(env.SLACK_BOT_TOKEN, event.channel, result.text);
   } catch (error) {
     console.error("Failed to process message:", error);
+    await sendSlackMessage(env.SLACK_BOT_TOKEN, event.channel, ":warning: エラーが発生しました。しばらくしてから再度お試しください。");
   }
 }
 
