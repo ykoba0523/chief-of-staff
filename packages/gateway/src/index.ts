@@ -6,6 +6,7 @@ export interface Env {
   SLACK_USER_ID: string;
   MASTRA_API_URL: string;
   MASTRA_SHARED_SECRET: string;
+  CONVERSATION_HISTORY: KVNamespace;
 }
 
 export default {
@@ -24,7 +25,27 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
+type Message = { role: "user" | "assistant"; content: string };
+
+const MAX_HISTORY = 20;
+const TTL_SECONDS = 30 * 24 * 60 * 60; // 30日
+
+async function getHistory(kv: KVNamespace, threadTs: string): Promise<Message[]> {
+  const data = await kv.get<Message[]>(`thread:${threadTs}`, "json");
+  if (!data) return [];
+  return data.slice(-MAX_HISTORY);
+}
+
+async function saveHistory(kv: KVNamespace, threadTs: string, messages: Message[]): Promise<void> {
+  await kv.put(`thread:${threadTs}`, JSON.stringify(messages), { expirationTtl: TTL_SECONDS });
+}
+
 async function handleSlackEvent(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  // Slackのリトライリクエストは無視（重複処理防止）
+  if (request.headers.get("x-slack-retry-num")) {
+    return new Response("ok");
+  }
+
   const body = await request.text();
   const timestamp = request.headers.get("x-slack-request-timestamp") ?? "";
   const signature = request.headers.get("x-slack-signature") ?? "";
