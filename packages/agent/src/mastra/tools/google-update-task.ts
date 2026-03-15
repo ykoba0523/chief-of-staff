@@ -18,6 +18,7 @@ export const updateTask = createTool({
   outputSchema: z.object({
     id: z.string(),
     title: z.string(),
+    notes: z.string(),
     status: z.string(),
   }),
   execute: async ({ context }) => {
@@ -51,8 +52,9 @@ export const updateTask = createTool({
     const task = (await res.json()) as {
       id: string;
       title: string;
+      notes: string;
       status: string;
     };
-    return { id: task.id, title: task.title, status: task.status };
+    return { id: task.id, title: task.title, notes: task.notes ?? "", status: task.status };
   },
 });
