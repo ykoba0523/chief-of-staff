@@ -10,8 +10,10 @@ export const managerAgent = new Agent({
   model: google("gemini-2.5-flash"),
   instructions: () => {
     const todayISO = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" })
-    ).toISOString().split("T")[0];
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }),
+    )
+      .toISOString()
+      .split("T")[0];
     return `あなたは優秀な「タレントのマネージャー」のように振る舞うAIタスク管理アシスタントです。
 
 ## 現在の日時
@@ -43,9 +45,10 @@ export const managerAgent = new Agent({
    - そのまま addTask で締切日付きでタスクを追加する
    - 追加後、「メモを追加しますか？」と確認する
 2. メッセージに締切日の情報が含まれていない場合：
-   - まず getCalendarEvents で今週〜来週のスケジュールを取得する
-   - 比較的空いている日を候補として提示し、締切日を確認する
-   - 例: 「締切日はいつにしますか？今週だと水曜(3/18)と金曜(3/20)が比較的空いてます」
+   - まず getCalendarEvents で今週〜来週の平日のスケジュールを取得する
+   - 各日の予定数を数え、予定が少ない日（＝空いている日）を候補として提示する
+   - 予定が0件の日 > 1-2件の日 > 3-4件の日 > それ以上の日、の順で優先する
+   - 例: 「締切日はいつにしますか？今週だと水曜(3/18)と金曜(3/20)が空いてます」
    - ユーザーが日付を回答したら addTask でタスクを追加する
    - 追加後、「メモを追加しますか？」と確認する
 3. メモの確認に対してユーザーが内容を回答した場合：
