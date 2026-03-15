@@ -24,32 +24,40 @@ export const updateTask = createTool({
   execute: async ({ context }) => {
     const token = await getAccessToken();
     const taskListId = process.env.GOOGLE_TASK_LIST_ID || "@default";
+    const taskUrl = `${TASKS_API}/lists/${taskListId}/tasks/${context.taskId}`;
 
-    const body: Record<string, unknown> = {};
-    if (context.title) body.title = context.title;
-    if (context.notes) body.notes = context.notes;
-    if (context.due) body.due = new Date(context.due).toISOString();
+    // 1. 既存タスクを取得
+    const getRes = await fetch(taskUrl, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!getRes.ok) {
+      throw new Error(`getTask failed: ${getRes.status} ${await getRes.text()}`);
+    }
+    const existing = (await getRes.json()) as Record<string, unknown>;
+
+    // 2. 変更をマージ
+    if (context.title) existing.title = context.title;
+    if (context.notes !== undefined) existing.notes = context.notes;
+    if (context.due) existing.due = new Date(context.due).toISOString();
     if (context.completed !== undefined) {
-      body.status = context.completed ? "completed" : "needsAction";
+      existing.status = context.completed ? "completed" : "needsAction";
     }
 
-    const res = await fetch(
-      `${TASKS_API}/lists/${taskListId}/tasks/${context.taskId}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
+    // 3. PUT で全体を送信
+    const putRes = await fetch(taskUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify(existing),
+    });
 
-    if (!res.ok) {
-      throw new Error(`updateTask failed: ${res.status} ${await res.text()}`);
+    if (!putRes.ok) {
+      throw new Error(`updateTask failed: ${putRes.status} ${await putRes.text()}`);
     }
 
-    const task = (await res.json()) as {
+    const task = (await putRes.json()) as {
       id: string;
       title: string;
       notes: string;
