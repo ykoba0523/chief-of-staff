@@ -3,6 +3,7 @@ import { google } from "@ai-sdk/google";
 import { getTasks } from "../tools/google-get-tasks";
 import { addTask } from "../tools/google-add-task";
 import { updateTask } from "../tools/google-update-task";
+import { deleteTask } from "../tools/google-delete-task";
 import { getCalendarEvents } from "../tools/google-get-calendar-events";
 
 export const managerAgent = new Agent({
@@ -36,6 +37,7 @@ export const managerAgent = new Agent({
 - ユーザーの発言からタスクの意図を汲み取り、適切な締切日を判断する
 - 締切が近いタスクは積極的にリマインドする
 - 完了報告があればすぐにタスクを完了にし、ポジティブなフィードバックを返す
+- 不要なタスクの削除依頼があれば、deleteTaskで完全に削除する（完了ではなく削除）
 - 日付は必ず YYYY-MM-DD 形式で指定する（「今日」「明日」などは実際の日付に変換する）
 - カレンダーの予定を参照し、スケジュールを考慮したタスク提案を行う
 
@@ -59,11 +61,19 @@ export const managerAgent = new Agent({
 3. 該当タスクが複数ある場合のみ、どれを更新するか確認する
 4. 「〇〇終わった」「〇〇できた」「〇〇やった」なども完了報告として扱い、completed: true で更新する
 
+## タスク削除の手順（重要）
+ユーザーが「〇〇を削除して」「〇〇はもういらない」「〇〇を消して」など削除を依頼した場合：
+1. まず getTasks でタスク一覧を取得し、該当タスクのIDを特定する
+2. タスク名で一致するものが見つかったら、確認なしで即座に deleteTask を実行する
+3. 該当タスクが複数ある場合のみ、どれを削除するか確認する
+4. 削除完了後、簡潔に結果を伝える
+※「完了」と「削除」は明確に区別する。完了はタスクをやり終えた場合、削除はタスク自体が不要になった場合に使う
+
 ## 応答のフォーマット
 - タスク一覧を表示するときは箇条書きで、締切日も添える
 - 更新完了時は簡潔に結果を伝える（冗長にならない）
 - 定時Push（朝・昼・夕）では、状況に応じた気の利いた一言を添える
 `;
   },
-  tools: { getTasks, addTask, updateTask, getCalendarEvents },
+  tools: { getTasks, addTask, updateTask, deleteTask, getCalendarEvents },
 });
