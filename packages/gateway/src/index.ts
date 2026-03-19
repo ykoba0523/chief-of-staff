@@ -154,17 +154,33 @@ async function processAndReply(env: Env, event: any): Promise<void> {
     // 2. 新しいメッセージを追加
     history.push({ role: "user", content: event.text });
 
-    // 3. エージェントに問い合わせ
-    const agentResponse = await fetch(`${env.MASTRA_API_URL}/api/agents/managerAgent/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${env.MASTRA_SHARED_SECRET}`,
-      },
-      body: JSON.stringify({
-        messages: history,
-      }),
-    });
+    // 3. エージェントに問い合わせ（25秒タイムアウト）
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+    let agentResponse: Response;
+    try {
+      agentResponse = await fetch(`${env.MASTRA_API_URL}/api/agents/managerAgent/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${env.MASTRA_SHARED_SECRET}`,
+        },
+        body: JSON.stringify({
+          messages: history,
+        }),
+        signal: controller.signal,
+      });
+    } catch (e: unknown) {
+      if (e instanceof Error && e.name === "AbortError") {
+        console.error("Agent API timeout (25s exceeded)");
+        await sendSlackMessage(env.SLACK_BOT_TOKEN, event.channel, ":warning: 応答に時間がかかりすぎたため中断しました。しばらくしてから再度お試しください。", threadTs);
+        return;
+      }
+      throw e;
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!agentResponse.ok) {
       console.error("Agent API error:", agentResponse.status, await agentResponse.text());
