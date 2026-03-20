@@ -11,13 +11,18 @@
     ]
   },
   "scripts": {
-    "dev:gateway": "pnpm --filter gateway dev",
-    "dev:agent": "pnpm --filter agent dev",
-    "deploy:gateway": "pnpm --filter gateway deploy",
-    "build:agent": "pnpm --filter agent build"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^1.2.0",
+    "@mastra/core": "^0.10.0",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
-    "dotenv": "^17.3.1",
-    "tsx": "^4.21.0"
+    "@cloudflare/workers-types": "^4.20250309.0",
+    "typescript": "^5.8.2",
+    "wrangler": "^4.18.0"
   }
 }

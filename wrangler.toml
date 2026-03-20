@@ -1,0 +1,22 @@
+name = "chief-of-staff"
+main = "src/index.ts"
+compatibility_date = "2025-03-10"
+compatibility_flags = ["nodejs_compat"]
+
+# Secrets (wrangler secret put で設定):
+# - SLACK_SIGNING_SECRET
+# - SLACK_BOT_TOKEN
+# - SLACK_USER_ID
+# - GOOGLE_GENERATIVE_AI_API_KEY
+# - GOOGLE_CLIENT_ID
+# - GOOGLE_CLIENT_SECRET
+# - GOOGLE_REFRESH_TOKEN
+# - GOOGLE_TASK_LIST_ID
+
+[[kv_namespaces]]
+binding = "CONVERSATION_HISTORY"
+id = "6dc92775bc434f91a70e0815583d272d"
+
+# 定時Push: JST 9:00 / 12:30 / 17:00 (平日のみ, UTC基準)
+[triggers]
+crons = ["0 0 * * MON-FRI", "30 3 * * MON-FRI", "0 8 * * MON-FRI"]
