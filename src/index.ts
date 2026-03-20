@@ -11,7 +11,7 @@ export interface Env {
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   GOOGLE_REFRESH_TOKEN: string;
-  GOOGLE_TASK_LIST_ID: string;
+  GOOGLE_TASK_LIST_ID?: string;
   CONVERSATION_HISTORY: KVNamespace;
 }
 
@@ -38,11 +38,16 @@ export default {
  * @mastra/core や @ai-sdk/google が process.env を参照するため
  */
 function setEnv(env: Env): void {
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY = env.GOOGLE_GENERATIVE_AI_API_KEY;
-  process.env.GOOGLE_CLIENT_ID = env.GOOGLE_CLIENT_ID;
-  process.env.GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
-  process.env.GOOGLE_REFRESH_TOKEN = env.GOOGLE_REFRESH_TOKEN;
-  process.env.GOOGLE_TASK_LIST_ID = env.GOOGLE_TASK_LIST_ID;
+  const entries: [string, string | undefined][] = [
+    ["GOOGLE_GENERATIVE_AI_API_KEY", env.GOOGLE_GENERATIVE_AI_API_KEY],
+    ["GOOGLE_CLIENT_ID", env.GOOGLE_CLIENT_ID],
+    ["GOOGLE_CLIENT_SECRET", env.GOOGLE_CLIENT_SECRET],
+    ["GOOGLE_REFRESH_TOKEN", env.GOOGLE_REFRESH_TOKEN],
+    ["GOOGLE_TASK_LIST_ID", env.GOOGLE_TASK_LIST_ID],
+  ];
+  for (const [key, value] of entries) {
+    if (value) process.env[key] = value;
+  }
 }
 
 async function handleSlackEvent(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
