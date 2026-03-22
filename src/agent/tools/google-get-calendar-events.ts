@@ -66,6 +66,11 @@ export const getCalendarEvents = createTool({
       end: e.end?.dateTime || e.end?.date || null,
       location: e.location || "",
       description: e.description || "",
+      attendees: (e.attendees || []).map((a: any) => ({
+        email: a.email || "",
+        displayName: a.displayName || "",
+        self: a.self || false,
+      })),
     }));
 
     return { events };
