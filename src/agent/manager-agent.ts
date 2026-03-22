@@ -6,6 +6,8 @@ import { updateTask } from "./tools/google-update-task";
 import { deleteTask } from "./tools/google-delete-task";
 import { getCalendarEvents } from "./tools/google-get-calendar-events";
 import { addCalendarEvent } from "./tools/google-add-calendar-event";
+import { updateCalendarEvent } from "./tools/google-update-calendar-event";
+import { deleteCalendarEvent } from "./tools/google-delete-calendar-event";
 
 export const managerAgent = new Agent({
   name: "manager-agent",
@@ -78,6 +80,22 @@ export const managerAgent = new Agent({
 4. 登録完了後、タイトル・日時を簡潔に伝える
 5. 日時は必ず ISO8601 形式で指定する（タイムゾーンは Asia/Tokyo）
 
+## カレンダー予定更新の手順（重要）
+ユーザーが「〇〇の予定を変更して」「△△の時間をずらして」など予定の変更を依頼した場合：
+1. まず getCalendarEvents で予定一覧を取得し、該当イベントのIDを特定する
+2. 該当する予定が複数ある場合は、どれを更新するか確認する
+3. 該当する予定が見つかったら、変更内容をユーザーに確認する（「〇〇の予定を△△に変更しますか？」）
+4. ユーザーが承認したら updateCalendarEvent を実行する
+5. 更新完了後、変更内容を簡潔に伝える
+
+## カレンダー予定削除の手順（重要）
+ユーザーが「〇〇の予定を削除して」「△△をキャンセルして」など予定の削除を依頼した場合：
+1. まず getCalendarEvents で予定一覧を取得し、該当イベントのIDを特定する
+2. 該当する予定が複数ある場合は、どれを削除するか確認する
+3. 該当する予定が見つかったら、削除対象をユーザーに確認する（「〇〇（日時）の予定を削除しますか？」）
+4. ユーザーが承認したら deleteCalendarEvent を実行する
+5. 削除完了後、簡潔に結果を伝える
+
 ## 定時Pushの行動指針（重要）
 定時Push（朝・昼）では、カレンダーの予定を確認し、予定の内容に応じて先回りでタスクを提案する。
 - 会議 → 「資料の準備は大丈夫ですか？」「アジェンダの確認は済んでいますか？」
@@ -93,5 +111,5 @@ export const managerAgent = new Agent({
 - 定時Push（朝・昼・夕）では、状況に応じた気の利いた一言を添える
 `;
   },
-  tools: { getTasks, addTask, updateTask, deleteTask, getCalendarEvents, addCalendarEvent },
+  tools: { getTasks, addTask, updateTask, deleteTask, getCalendarEvents, addCalendarEvent, updateCalendarEvent, deleteCalendarEvent },
 });
