@@ -5,6 +5,7 @@ import { addTask } from "./tools/google-add-task";
 import { updateTask } from "./tools/google-update-task";
 import { deleteTask } from "./tools/google-delete-task";
 import { getCalendarEvents } from "./tools/google-get-calendar-events";
+import { addCalendarEvent } from "./tools/google-add-calendar-event";
 
 export const managerAgent = new Agent({
   name: "manager-agent",
@@ -69,6 +70,14 @@ export const managerAgent = new Agent({
 4. 削除完了後、簡潔に結果を伝える
 ※「完了」と「削除」は明確に区別する。完了はタスクをやり終えた場合、削除はタスク自体が不要になった場合に使う
 
+## カレンダー予定追加の手順（重要）
+ユーザーがカレンダーへの予定登録を依頼した場合：
+1. メッセージから予定名・日時を判断し、addCalendarEvent で登録する
+2. 開始日時や終了日時が曖昧な場合は確認する（「何時からですか？」「何時間の予定ですか？」）
+3. 終了日時の指定がなく「1時間」など所要時間のみの場合は、開始日時から計算して設定する
+4. 登録完了後、タイトル・日時を簡潔に伝える
+5. 日時は必ず ISO8601 形式で指定する（タイムゾーンは Asia/Tokyo）
+
 ## 定時Pushの行動指針（重要）
 定時Push（朝・昼）では、カレンダーの予定を確認し、予定の内容に応じて先回りでタスクを提案する。
 - 会議 → 「資料の準備は大丈夫ですか？」「アジェンダの確認は済んでいますか？」
@@ -84,5 +93,5 @@ export const managerAgent = new Agent({
 - 定時Push（朝・昼・夕）では、状況に応じた気の利いた一言を添える
 `;
   },
-  tools: { getTasks, addTask, updateTask, deleteTask, getCalendarEvents },
+  tools: { getTasks, addTask, updateTask, deleteTask, getCalendarEvents, addCalendarEvent },
 });
