@@ -8,6 +8,7 @@ import { getCalendarEvents } from "./tools/google-get-calendar-events";
 import { addCalendarEvent } from "./tools/google-add-calendar-event";
 import { updateCalendarEvent } from "./tools/google-update-calendar-event";
 import { deleteCalendarEvent } from "./tools/google-delete-calendar-event";
+import { checkRoomAvailability } from "./tools/google-check-room-availability";
 
 export const managerAgent = new Agent({
   name: "manager-agent",
@@ -99,6 +100,18 @@ export const managerAgent = new Agent({
 5. ユーザーが承認したら deleteCalendarEvent を実行する
 6. 削除完了後、簡潔に結果を伝える
 
+## 会議室の空き状況確認（重要）
+ユーザーが会議室の空き状況を確認した場合：
+1. checkRoomAvailability ツールで指定された時間帯の空き状況を取得する
+2. 利用可能な会議室を一覧で提案する
+3. 空いている会議室がない場合はその旨を伝える
+4. notFoundRoomNames に値がある場合は「〇〇という会議室は登録されていません」と案内する
+
+予定の追加・更新時にユーザーが会議室の予約も希望した場合：
+1. まず checkRoomAvailability で空き状況を確認する
+2. 利用可能な会議室の候補を提示し、ユーザーに選択してもらう
+3. 選択後、addCalendarEvent または updateCalendarEvent で会議室を紐付けて予定を登録・更新する
+
 ## 定時Pushの行動指針（重要）
 定時Push（朝・昼）では、カレンダーの予定を確認し、予定の内容に応じて先回りでタスクを提案する。
 - 会議 → 「資料の準備は大丈夫ですか？」「アジェンダの確認は済んでいますか？」
@@ -114,5 +127,5 @@ export const managerAgent = new Agent({
 - 定時Push（朝・昼・夕）では、状況に応じた気の利いた一言を添える
 `;
   },
-  tools: { getTasks, addTask, updateTask, deleteTask, getCalendarEvents, addCalendarEvent, updateCalendarEvent, deleteCalendarEvent },
+  tools: { getTasks, addTask, updateTask, deleteTask, getCalendarEvents, addCalendarEvent, updateCalendarEvent, deleteCalendarEvent, checkRoomAvailability },
 });
