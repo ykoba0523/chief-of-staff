@@ -12,6 +12,7 @@ compatibility_flags = ["nodejs_compat"]
 # - GOOGLE_CLIENT_SECRET
 # - GOOGLE_REFRESH_TOKEN
 # - GOOGLE_TASK_LIST_ID
+# - MEETING_ROOMS (JSON配列: [{"name":"会議室名","calendarId":"xxx@resource.calendar.google.com"}])
 
 [[kv_namespaces]]
 binding = "CONVERSATION_HISTORY"
