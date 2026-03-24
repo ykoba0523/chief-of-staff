@@ -13,6 +13,7 @@ export const addCalendarEvent = createTool({
     endDateTime: z.string().describe("終了日時 (ISO8601形式、例: 2026-03-22T15:00:00+09:00)"),
     location: z.string().optional().describe("場所"),
     description: z.string().optional().describe("説明・メモ"),
+    roomCalendarId: z.string().optional().describe("予約する会議室のカレンダーID"),
   }),
   outputSchema: z.object({
     id: z.string(),
@@ -30,6 +31,9 @@ export const addCalendarEvent = createTool({
     };
     if (context.location) body.location = context.location;
     if (context.description) body.description = context.description;
+    if (context.roomCalendarId) {
+      body.attendees = [{ email: context.roomCalendarId, resource: true }];
+    }
 
     const res = await fetch(`${CALENDAR_API}/calendars/primary/events`, {
       method: "POST",

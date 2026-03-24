@@ -14,6 +14,7 @@ export const updateCalendarEvent = createTool({
     endDateTime: z.string().optional().describe("新しい終了日時 (ISO8601形式)"),
     location: z.string().optional().describe("新しい場所"),
     description: z.string().optional().describe("新しい説明"),
+    roomCalendarId: z.string().optional().describe("予約する会議室のカレンダーID"),
   }),
   outputSchema: z.object({
     id: z.string(),
@@ -40,6 +41,15 @@ export const updateCalendarEvent = createTool({
     if (context.endDateTime) existing.end = { dateTime: context.endDateTime, timeZone: "Asia/Tokyo" };
     if (context.location !== undefined) existing.location = context.location;
     if (context.description !== undefined) existing.description = context.description;
+    if (context.roomCalendarId) {
+      const existingAttendees = (existing.attendees as any[] || []).filter(
+        (a: any) => !a.resource,
+      );
+      existing.attendees = [
+        ...existingAttendees,
+        { email: context.roomCalendarId, resource: true },
+      ];
+    }
 
     // 3. PUT で全体を送信
     const putRes = await fetch(eventUrl, {
